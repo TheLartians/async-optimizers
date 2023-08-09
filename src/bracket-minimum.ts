@@ -1,11 +1,8 @@
-'use strict';
 
-module.exports = bracketMinimum;
-
-function bracketMinimum (bounds, f, x0, dx, xMin, xMax, maxIter) {
+export const bracketMinimum = (bounds: [number,number], f: (v: number) => number, x0: number, dx: number, xMin: number, xMax: number) => {
   // If either size is unbounded (=infinite), Expand the guess
   // range until we either bracket a minimum or until we reach the bounds:
-  var fU, fL, fMin, n, xL, xU, bounded;
+  let fU, fL, fMin, n, xL, xU, bounded;
   n = 1;
   xL = x0;
   xU = x0;
@@ -42,7 +39,7 @@ function bracketMinimum (bounds, f, x0, dx, xMin, xMax, maxIter) {
     // Increase the increment at a very quickly increasing rate to account
     // for the fact that we have *no* idea what floating point magnitude is
     // desirable. In order to avoid this, you should really provide *any
-    // reasonable bounds at all* for the variables.
+    // reasonable bounds at all* for the letiables.
     dx *= n < 4 ? 2 : Math.exp(n * 0.5);
 
     if (!isFinite(dx)) {

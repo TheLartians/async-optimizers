@@ -1,25 +1,29 @@
-'use strict';
 
-var PHI_RATIO = 2 / (1 + Math.sqrt(5));
+const PHI_RATIO = 2 / (1 + Math.sqrt(5));
 
-module.exports = goldenSectionMinimize;
+export interface GoldenSectionMinimizeStatus {
+  iterations?: number;
+  argmin?: number
+  minimum?: number
+  converged?: boolean
+}
 
-function goldenSectionMinimize (f, xL, xU, tol, maxIterations, status) {
-  var xF, fF;
-  var iteration = 0;
-  var x1 = xU - PHI_RATIO * (xU - xL);
-  var x2 = xL + PHI_RATIO * (xU - xL);
+export const goldenSectionMinimize = (f: (v: number) => number, xL: number, xU: number, tol: number, maxIterations: number, status?: GoldenSectionMinimizeStatus) => {
+  let xF, fF;
+  let iteration = 0;
+  let x1 = xU - PHI_RATIO * (xU - xL);
+  let x2 = xL + PHI_RATIO * (xU - xL);
   // Initial bounds:
-  var f1 = f(x1);
-  var f2 = f(x2);
+  let f1 = f(x1);
+  let f2 = f(x2);
 
   // Store these values so that we can return these if they're better.
   // This happens when the minimization falls *approaches* but never
   // actually reaches one of the bounds
-  var f10 = f(xL);
-  var f20 = f(xU);
-  var xL0 = xL;
-  var xU0 = xU;
+  let f10 = f(xL);
+  let f20 = f(xU);
+  let xL0 = xL;
+  let xU0 = xU;
 
   // Simple, robust golden section minimization:
   while (++iteration < maxIterations && Math.abs(xU - xL) > tol) {
