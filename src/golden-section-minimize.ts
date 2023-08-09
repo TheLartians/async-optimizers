@@ -20,10 +20,10 @@ export const goldenSectionMinimize = (f: (v: number) => number, xL: number, xU: 
   // Store these values so that we can return these if they're better.
   // This happens when the minimization falls *approaches* but never
   // actually reaches one of the bounds
-  let f10 = f(xL);
-  let f20 = f(xU);
-  let xL0 = xL;
-  let xU0 = xU;
+  const f10 = f(xL);
+  const f20 = f(xU);
+  const xL0 = xL;
+  const xU0 = xU;
 
   // Simple, robust golden section minimization:
   while (++iteration < maxIterations && Math.abs(xU - xL) > tol) {
