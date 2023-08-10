@@ -1,4 +1,4 @@
-import { MinimizeOptions, MinimizeStatus, minimizeGoldenSection1D } from "./minimizeGoldenSection1D";
+import { minimizeGoldenSection1D } from "./minimizeGoldenSection1D";
 
 interface PowellOptions {
     maxIter?: number;
@@ -13,7 +13,7 @@ interface PowellStatus {
     points: number[][]
 }
 
-export const minimizePowell = <T extends number[]>(f: (v: T) => number, x0: T, options?: PowellOptions, status?: PowellStatus): (T | undefined) => {
+export const minimizePowell = async <T extends number[]>(f: (v: T) => (number | Promise<number>), x0: T, options?: PowellOptions, status?: PowellStatus): Promise<T | undefined> => {
   let i, j, iter, ui: number[], tmin, pj: number[], fi, un, u: number[][], p0, sum, err, perr, du, tlimit;
 
   const maxIter = options?.maxIter ?? 20
@@ -121,7 +121,7 @@ export const minimizePowell = <T extends number[]>(f: (v: T) => number, x0: T, o
       // direction ui:
       tlimit = bound(p, ui);
 
-      tmin = minimizeGoldenSection1D(fi, {
+      tmin = await minimizeGoldenSection1D(fi, {
         lowerBound: tlimit[0],
         upperBound: tlimit[1],
         initialIncrement: dx,
@@ -175,7 +175,7 @@ export const minimizePowell = <T extends number[]>(f: (v: T) => number, x0: T, o
 
     tlimit = bound(p, ui);
 
-    tmin = minimizeGoldenSection1D(fi, {
+    tmin = await minimizeGoldenSection1D(fi, {
       lowerBound: tlimit[0],
       upperBound: tlimit[1],
       initialIncrement: dx,
@@ -204,7 +204,7 @@ export const minimizePowell = <T extends number[]>(f: (v: T) => number, x0: T, o
 
     err = Math.sqrt(err);
 
-    if (verbose) console.log('Iteration ' + iter + ': ' + (err / perr) + ' f(' + p + ') = ' + f(p as T));
+    if (verbose) console.log('Iteration ' + iter + ': ' + (err / perr) + ' f(' + p + ') = ' + await f(p as T));
 
     if (err / perr < tol) return p as T;
 

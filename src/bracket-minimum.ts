@@ -1,12 +1,12 @@
 
-export const bracketMinimum = (bounds: [number,number], f: (v: number) => number, x0: number, dx: number, xMin: number, xMax: number) => {
+export const bracketMinimum = async (bounds: [number,number], f: (v: number) => (number | Promise<number>), x0: number, dx: number, xMin: number, xMax: number) => {
   // If either size is unbounded (=infinite), Expand the guess
   // range until we either bracket a minimum or until we reach the bounds:
   let fU, fL, fMin, n, xL, xU, bounded;
   n = 1;
   xL = x0;
   xU = x0;
-  fMin = fL = fU = f(x0);
+  fMin = fL = fU = await f(x0);
   while (!bounded && isFinite(dx) && !isNaN(dx)) {
     ++n;
     bounded = true;
@@ -14,13 +14,13 @@ export const bracketMinimum = (bounds: [number,number], f: (v: number) => number
     if (fL <= fMin) {
       fMin = fL;
       xL = Math.max(xMin, xL - dx);
-      fL = f(xL);
+      fL = await f(xL);
       bounded = false;
     }
     if (fU <= fMin) {
       fMin = fU;
       xU = Math.min(xMax, xU + dx);
-      fU = f(xU);
+      fU = await f(xU);
       bounded = false;
     }
 

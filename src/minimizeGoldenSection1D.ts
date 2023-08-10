@@ -13,7 +13,7 @@ export interface MinimizeOptions {
 
 export type MinimizeStatus = GoldenSectionMinimizeStatus;
 
-export const minimizeGoldenSection1D = (f: (v: number) => number, options?: MinimizeOptions, status?: MinimizeStatus) => {
+export const minimizeGoldenSection1D = async (f: (v: number) => (number | Promise<number>), options?: MinimizeOptions, status?: MinimizeStatus) => {
   options = options ?? {};
   let x0;
   const tolerance = options.tolerance === undefined ? 1e-8 : options.tolerance;
@@ -45,7 +45,7 @@ export const minimizeGoldenSection1D = (f: (v: number) => number, options?: Mini
       x0 = options.guess;
     }
 
-    bracketMinimum(bounds, f, x0, dx, xMin, xMax);
+    await bracketMinimum(bounds, f, x0, dx, xMin, xMax);
 
     if (isNaN(bounds[0]) || isNaN(bounds[1])) {
       return undefined;

@@ -8,20 +8,20 @@ export interface GoldenSectionMinimizeStatus {
   converged?: boolean
 }
 
-export const goldenSectionMinimize = (f: (v: number) => number, xL: number, xU: number, tol: number, maxIterations: number, status?: GoldenSectionMinimizeStatus) => {
+export const goldenSectionMinimize = async (f: (v: number) => number | Promise<number>, xL: number, xU: number, tol: number, maxIterations: number, status?: GoldenSectionMinimizeStatus) => {
   let xF, fF;
   let iteration = 0;
   let x1 = xU - PHI_RATIO * (xU - xL);
   let x2 = xL + PHI_RATIO * (xU - xL);
   // Initial bounds:
-  let f1 = f(x1);
-  let f2 = f(x2);
+  let f1 = await f(x1);
+  let f2 = await f(x2);
 
   // Store these values so that we can return these if they're better.
   // This happens when the minimization falls *approaches* but never
   // actually reaches one of the bounds
-  const f10 = f(xL);
-  const f20 = f(xU);
+  const f10 = await f(xL);
+  const f20 = await f(xU);
   const xL0 = xL;
   const xU0 = xU;
 
@@ -32,13 +32,13 @@ export const goldenSectionMinimize = (f: (v: number) => number, xL: number, xU: 
       x2 = x1;
       f2 = f1;
       x1 = xU - PHI_RATIO * (xU - xL);
-      f1 = f(x1);
+      f1 = await f(x1);
     } else {
       xL = x1;
       x1 = x2;
       f1 = f2;
       x2 = xL + PHI_RATIO * (xU - xL);
-      f2 = f(x2);
+      f2 = await f(x2);
     }
   }
 

@@ -21,9 +21,9 @@ describe("minimizePowell standard tests", () => {
 
   let i, j, k, n: number, sum;
 
-  test('minimizes x^2 + y^2 - x * y starting at [-20, 25]', () => {
+  test('minimizes x^2 + y^2 - x * y starting at [-20, 25]', async () => {
     assertVectorAlmostEqual(
-      minimizePowell(x => {
+      await minimizePowell(x => {
         return 1 + x[0] * x[0] + x[1] * x[1] - 1.9 * x[0] * x[1];
       }, [-20, 25]),
       [0, 0]
@@ -31,9 +31,9 @@ describe("minimizePowell standard tests", () => {
 
   });
 
-  test('minimizes (x + 10)^2 + (y + 10)^2 to [-10, -10]', () => {
+  test('minimizes (x + 10)^2 + (y + 10)^2 to [-10, -10]', async () => {
     assertVectorAlmostEqual(
-      minimizePowell(
+      await minimizePowell(
         x => { return Math.pow(x[0] - 10, 2) + Math.pow(x[1] - 10, 2); },
         [0, 0]
       ),
@@ -42,9 +42,9 @@ describe("minimizePowell standard tests", () => {
 
   });
 
-  test('minimizes (x + 10)^2 + (y + 10)^2 to [1, 1] within [0, 1] x [0, 1]', () => {
+  test('minimizes (x + 10)^2 + (y + 10)^2 to [1, 1] within [0, 1] x [0, 1]', async () => {
     assertVectorAlmostEqual(
-      minimizePowell(
+      await minimizePowell(
         x => { return Math.pow(x[0] - 10, 2) + Math.pow(x[1] - 10, 2); },
         [0.5, 0.5],
         { bounds: [[0, 1], [0, 1]] }
@@ -54,9 +54,9 @@ describe("minimizePowell standard tests", () => {
 
   });
 
-  test('minimizes (x - 10)^2 + (y - 10)^2 to [1, 1] within [0, 1] x [0, 1]', () => {
+  test('minimizes (x - 10)^2 + (y - 10)^2 to [1, 1] within [0, 1] x [0, 1]', async () => {
     assertVectorAlmostEqual(
-      minimizePowell(
+      await minimizePowell(
         x => { return Math.pow(x[0] + 10, 2) + Math.pow(x[1] + 10, 2); },
         [0.5, 0.5],
         { bounds: [[0, 1], [0, 1]] }
@@ -66,9 +66,9 @@ describe("minimizePowell standard tests", () => {
 
   });
 
-  test('minimizes (x - 10)^2 + (y - 10)^2 to [1, 1] for x within [0, 1]', () => {
+  test('minimizes (x - 10)^2 + (y - 10)^2 to [1, 1] for x within [0, 1]', async () => {
     assertVectorAlmostEqual(
-      minimizePowell(
+      await minimizePowell(
         x => { return Math.pow(x[0] - 10, 2) + Math.pow(x[1] + 10, 2); },
         [0.5, 0.5],
         { bounds: [[0, 1], null] }
@@ -78,9 +78,9 @@ describe("minimizePowell standard tests", () => {
 
   });
 
-  test('Rosenbrock function', () => {
+  test('Rosenbrock function', async () => {
     assertVectorAlmostEqual(
-      minimizePowell(
+      await minimizePowell(
         x => {
           return 100.0 * Math.pow(x[1] - x[0] * x[0], 2) + Math.pow(x[0] - 1, 2);
         },
@@ -91,9 +91,9 @@ describe("minimizePowell standard tests", () => {
 
   });
 
-  test("Booth's function", () => {
+  test("Booth's function", async () => {
     assertVectorAlmostEqual(
-      minimizePowell(
+      await minimizePowell(
         x => { return Math.pow(x[0] + 2 * x[1] - 7, 2) + Math.pow(2 * x[0] + x[1] - 5, 2); },
         [0.5, 0.5]
       ),
@@ -102,9 +102,9 @@ describe("minimizePowell standard tests", () => {
 
   });
 
-  test("Booth's function with one-way bounds", () => {
+  test("Booth's function with one-way bounds", async () => {
     assertVectorAlmostEqual(
-      minimizePowell(
+      await minimizePowell(
         x => { return Math.pow(x[0] + 2 * x[1] - 7, 2) + Math.pow(2 * x[0] + x[1] - 5, 2); },
         [0, 0],
         { bounds: [[-10, Infinity], [-Infinity, 10]] }
@@ -114,9 +114,9 @@ describe("minimizePowell standard tests", () => {
 
   });
 
-  test("Booth's function with two-way bounds", () => {
+  test("Booth's function with two-way bounds", async () => {
     assertVectorAlmostEqual(
-      minimizePowell(
+      await minimizePowell(
         x => { return Math.pow(x[0] + 2 * x[1] - 7, 2) + Math.pow(2 * x[0] + x[1] - 5, 2); },
         [0, 0],
         { bounds: [[-10, 10], [-10, 10]] }
@@ -126,9 +126,9 @@ describe("minimizePowell standard tests", () => {
 
   });
 
-  test("Booth's function with invalid initial guess", () => {
+  test("Booth's function with invalid initial guess", async () => {
     assertVectorAlmostEqual(
-      minimizePowell(
+      await minimizePowell(
         x => { return Math.pow(x[0] + 2 * x[1] - 7, 2) + Math.pow(2 * x[0] + x[1] - 5, 2); },
         [100, 100],
         { bounds: [[-10, 10], [-10, 10]] }
@@ -139,9 +139,9 @@ describe("minimizePowell standard tests", () => {
   });
 
   for (n = 0; n < 11; n++) {
-    test('Rosenbrock function in ' + n + 'D', () => {
+    test('Rosenbrock function in ' + n + 'D', async () => {
       assertVectorAlmostEqual(
-        minimizePowell(
+        await minimizePowell(
           x => {
             sum = 0;
             for (i = 0; i < x.length - 1; i++) {
@@ -160,9 +160,9 @@ describe("minimizePowell standard tests", () => {
   }
 
   for (n = 0; n < 11; n++) {
-    test('Rosenbrock function in ' + n + 'D in region [-10, 10]^n', () => {
+    test('Rosenbrock function in ' + n + 'D in region [-10, 10]^n', async () => {
       assertVectorAlmostEqual(
-        minimizePowell(
+        await minimizePowell(
           x => {
             sum = 0;
             for (i = 0; i < x.length - 1; i++) {
@@ -183,14 +183,14 @@ describe("minimizePowell standard tests", () => {
     });
   }
 
-  test("Beale's function", () => {
+  test("Beale's function", async () => {
     const f = (x: [number, number]) => {
       return Math.pow(1.5 - x[0] + x[0] * x[1], 2) +
         Math.pow(2.25 - x[0] + x[0] * x[1] * x[1], 2) +
         Math.pow(2.625 - x[0] + x[0] * x[1] * x[1] * x[1], 2);
     };
     assertVectorAlmostEqual(
-      minimizePowell(
+      await minimizePowell(
         f,
         [2, 0],
         { bounds: [[-4.5, 4.5], [-4.5, 4.5]] }
@@ -200,9 +200,9 @@ describe("minimizePowell standard tests", () => {
 
   });
 
-  test('Matyas function', () => {
+  test('Matyas function', async () => {
     assertVectorAlmostEqual(
-      minimizePowell(
+      await minimizePowell(
         x => {
           return 0.26 * (x[0] * x[0] + x[1] * x[1]) - 0.48 * x[0] * x[1];
         },
@@ -214,9 +214,9 @@ describe("minimizePowell standard tests", () => {
 
   });
 
-  test('Golstein-Price function', () => {
+  test('Golstein-Price function', async () => {
     assertVectorAlmostEqual(
-      minimizePowell(
+      await minimizePowell(
         x => {
           return (1 + Math.pow(x[0] + x[1] + 1, 2) * (19 - 14 * x[0] + 3 * x[0] * x[0] - 14 * x[1] + 6 * x[0] * x[1] + 3 * x[1] * x[1])) *
             (30 + Math.pow(2 * x[0] - 3 * x[1], 2) * (18 - 32 * x[0] + 12 * x[0] * x[0] + 48 * x[1] - 36 * x[0] * x[1] + 27 * x[1] * x[1]));
@@ -229,9 +229,9 @@ describe("minimizePowell standard tests", () => {
 
   });
 
-  test('McCormick function', () => {
+  test('McCormick function', async () => {
     assertVectorAlmostEqual(
-      minimizePowell(
+      await minimizePowell(
         x => {
           return Math.sin(x[0] + x[1]) + Math.pow(x[0] - x[1], 2) - 1.5 * x[0] + 2.5 * x[1] + 1;
         },
@@ -247,9 +247,9 @@ describe("minimizePowell standard tests", () => {
   // Fails because the line search doesn't successfully locate the sharp edges with
   // a good enough tolerance. It just assumes it's found a min and doesn't resolve
   // it well enough to march in the right direction.
-  // test('Bukin function No. 6', () => {
+  // test('Bukin function No. 6', async () => {
   //   assertVectorAlmostEqual(
-  //     minimizePowell(
+  //     await minimizePowell(
   //       x => {
   //         return 100 + Math.sqrt(Math.abs(x[1] - 0.01 * x[0] * x[0])) + 0.01 * Math.abs(x[0] + 10);
   //       },
@@ -260,9 +260,9 @@ describe("minimizePowell standard tests", () => {
   //   );
   // });
 
-  test('Three hump camel function', () => {
+  test('Three hump camel function', async () => {
     assertVectorAlmostEqual(
-      minimizePowell(
+      await minimizePowell(
         x => {
           return 2 * x[0] * x[0] - 1.05 * Math.pow(x[0], 4) + Math.pow(x[0], 6) / 6 + x[0] * x[1] + x[1] * x[1];
         },
@@ -278,9 +278,9 @@ describe("minimizePowell standard tests", () => {
     for (j = -3; j <= 3; j++) {
       for (k = -3; k <= 3; k++) {
         const x0: [number, number, number] = [i / 2, j / 2, k / 2];
-        test('3D paraboloid starting from ' + x0 + ' in [-1, 1] x [-1, 1] x [-1, 1]', () => {
+        test('3D paraboloid starting from ' + x0 + ' in [-1, 1] x [-1, 1] x [-1, 1]', async () => {
           assertVectorAlmostEqual(
-            minimizePowell(
+            await minimizePowell(
               (x: [number, number, number]) => { return x[0] * x[0] + x[1] * x[1] + x[2] * x[2]; },
               x0,
               {
@@ -302,9 +302,9 @@ describe("minimizePowell standard tests", () => {
     for (j = -3; j <= 3; j++) {
       for (k = -3; k <= 3; k++) {
         const x0 = [i / 2, j / 2, k / 2];
-        test('3D paraboloid starting from ' + x0 + ' without bounds', () => {
+        test('3D paraboloid starting from ' + x0 + ' without bounds', async () => {
           assertVectorAlmostEqual(
-            minimizePowell(
+            await minimizePowell(
               x => { return x[0] * x[0] + x[1] * x[1] + x[2] * x[2]; },
               x0,
               { maxIter: 10 }
@@ -328,13 +328,13 @@ describe("Minimize powell noise robustness", () => {
     1e-5,
     1e-8,
     1e-10,
-  ])("works with noise %p", (noiseLevel) => {
-    const result = minimizePowell<[number, number]>(x => {
+  ])("works with noise %p", async (noiseLevel) => {
+    const result = (await minimizePowell<[number, number]>(x => {
       return (x[0] - 2) ** 2 + (x[1] + 3) ** 2 + Math.random() * noiseLevel;
     }, [0, 0], {
       tolerance: noiseLevel,
       bounds: [[-10, 10], [-10, 10]],
-    })!
+    }))!
     expect(result[0]).toBeCloseTo(2, -Math.log10(noiseLevel) / 2 - 1)
     expect(result[1]).toBeCloseTo(-3, -Math.log10(noiseLevel) / 2 - 1)
   })
