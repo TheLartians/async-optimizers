@@ -2,6 +2,7 @@ import { MinimizeOptions, MinimizeStatus, minimizeGoldenSection1D } from "./mini
 
 interface PowellOptions {
     maxIter?: number;
+    maxIterLinearSearch?: number;
     lineTolerance?: number;
     tolerance?: number;
     bounds?: ([number, number] | null)[];
@@ -12,15 +13,16 @@ interface PowellStatus {
     points: number[][]
 }
 
-export const minimizePowell = <T extends number[]>(f: (v: T) => number, x0: T, options?: PowellOptions, status?: PowellStatus): T => {
-  let i, j, iter, ui: number[], tmin, pj: number[], fi, un, u: number[][], p0, sum, dx, err, perr, du, tlimit;
+export const minimizePowell = <T extends number[]>(f: (v: T) => number, x0: T, options?: PowellOptions, status?: PowellStatus): (T | undefined) => {
+  let i, j, iter, ui: number[], tmin, pj: number[], fi, un, u: number[][], p0, sum, err, perr, du, tlimit;
 
-  options = options || {};
-  let maxIter = options.maxIter === undefined ? 20 : options.maxIter;
-  let tol = options.tolerance === undefined ? 1e-8 : options.tolerance;
-  let tol1d = options.lineTolerance === undefined ? tol : options.lineTolerance;
-  let bounds = options.bounds === undefined ? [] : options.bounds;
-  let verbose = options.verbose === undefined ? false : options.verbose;
+  const maxIter = options?.maxIter ?? 20
+  const bounds = options?.bounds ?? []
+  const verbose = options?.verbose ?? false
+  const maxIterLinearSearch = options?.maxIterLinearSearch ?? 100;
+  const dx = 0.1
+  const tol = (options?.tolerance ?? 1e-8)
+  const tol1d = (options?.lineTolerance ?? tol) * dx
 
   if (status) status.points = [];
 
@@ -57,7 +59,7 @@ export const minimizePowell = <T extends number[]>(f: (v: T) => number, x0: T, o
 
   if (status) status.points.push(p.slice());
 
-  let bound = options.bounds
+  let bound = options?.bounds
     ? function (p: number[], ui: number[]) {
       let upper = Infinity;
       let lower = -Infinity;
@@ -96,6 +98,7 @@ export const minimizePowell = <T extends number[]>(f: (v: T) => number, x0: T, o
   iter = 0;
   perr = 0;
   while (++iter < maxIter) {
+
     // Reinitialize the search vectors:
     if (iter % (n) === 0) {
       for (i = 0; i < n; i++) {
@@ -114,21 +117,21 @@ export const minimizePowell = <T extends number[]>(f: (v: T) => number, x0: T, o
     // Minimize over each search direction u[i]:
     for (i = 0; i < n; i++) {
       ui = u[i];
-
       // Compute bounds based on starting point p in the
       // direction ui:
-
       tlimit = bound(p, ui);
-
-      // Minimize using golden section method:
-      dx = 0.1;
 
       tmin = minimizeGoldenSection1D(fi, {
         lowerBound: tlimit[0],
         upperBound: tlimit[1],
         initialIncrement: dx,
-        tolerance: dx * tol1d
+        tolerance: tol1d,
+        maxIterations: maxIterLinearSearch,
       });
+
+      if (tmin === undefined) {
+        return undefined
+      }
 
       if (tmin === 0) {
         return p as T; 
@@ -172,16 +175,19 @@ export const minimizePowell = <T extends number[]>(f: (v: T) => number, x0: T, o
 
     tlimit = bound(p, ui);
 
-    dx = 0.1;
-
     tmin = minimizeGoldenSection1D(fi, {
       lowerBound: tlimit[0],
       upperBound: tlimit[1],
       initialIncrement: dx,
-      tolerance: dx * tol1d
+      tolerance: tol1d,
+      maxIterations: maxIterLinearSearch,
     });
 
-    if (tmin === 0) {
+    if (tmin === undefined) {
+      return undefined;
+    }
+
+    if (tmin === 0 || !isFinite(tmin)) {
       return p as T;
     }
 

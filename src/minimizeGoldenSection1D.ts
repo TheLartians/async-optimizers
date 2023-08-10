@@ -48,7 +48,7 @@ export const minimizeGoldenSection1D = (f: (v: number) => number, options?: Mini
     bracketMinimum(bounds, f, x0, dx, xMin, xMax);
 
     if (isNaN(bounds[0]) || isNaN(bounds[1])) {
-      return NaN;
+      return undefined;
     }
   }
 

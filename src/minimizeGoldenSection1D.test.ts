@@ -66,7 +66,7 @@ describe('minimize',  () => {
 
   test('returns answer if tolerance not met', () => {
     const status: GoldenSectionMinimizeStatus = {};
-    expect(isNaN(minimizeGoldenSection1D((x) => x * (x - 2), {tolerance: 0, maxIterations: 200}, status))).toBeTruthy();
+    minimizeGoldenSection1D((x) => x * (x - 2), {tolerance: 0, maxIterations: 200}, status)
     expect(status.iterations).toEqual( 200);
     expect(status.minimum).toEqual( -1);
     assertAlmostEqual(status.argmin, 1);
@@ -147,8 +147,7 @@ describe('minimize',  () => {
   });
 
   test('fails to minimize a cubic with no bounds', () => {
-    expect(isNaN(minimizeGoldenSection1D((x) => x * (x - 2) * (x - 1)))).toBeTruthy();
-    
+    expect(isNaN(minimizeGoldenSection1D((x) => x * (x - 2) * (x - 1))!)).toBeTruthy();
   });
 
   test('minimizes a parabola with small starting increment', () => {
@@ -170,7 +169,7 @@ describe('minimize',  () => {
   });
 
   test('minimizes cosine', () => {
-    assertAlmostEqual(Math.cos(minimizeGoldenSection1D(Math.cos)), -1);
+    assertAlmostEqual(Math.cos(minimizeGoldenSection1D(Math.cos)!), -1);
     
   });
 

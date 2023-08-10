@@ -52,11 +52,18 @@ export const goldenSectionMinimize = (f: (v: number) => number, xL: number, xU: 
     status.converged = true;
   }
 
-  if (isNaN(f2) || isNaN(f1) || iteration === maxIterations) {
+  if (iteration === maxIterations) {
     if (status) {
       status.converged = false;
     }
-    return NaN;
+    return xF;
+  }
+
+  if (isNaN(f2) || isNaN(f1)) {
+    if (status) {
+      status.converged = false;
+    }
+    return undefined;
   }
 
   if (f10 < fF) {
