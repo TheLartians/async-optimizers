@@ -20,6 +20,10 @@
     "maximum"
   ],
   "author": "Lars Melchior",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TheLartians/async-optimizers"
+  },
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.22.10",
