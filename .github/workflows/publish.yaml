@@ -19,7 +19,7 @@ jobs:
           cache: 'yarn'
       - run: yarn install
       - name: publish
-        uses: mikeal/merge-release@8953b48c9eabd189aca7d8a242ba4c08d345f97f
+        uses: mikeal/merge-release@30319a1b598fb54c7117f8bfb4f488e19a3a2dec
         if: github.ref == 'refs/heads/main'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
