@@ -1,26 +1,33 @@
 import { bracketMinimum } from "./bracket-minimum";
-import { GoldenSectionMinimizeStatus, goldenSectionMinimize } from "./golden-section-minimize";
+import {
+  GoldenSectionMinimizeStatus,
+  goldenSectionMinimize,
+} from "./goldenSectionMinimize";
 
-
-export interface MinimizeOptions {
+export interface GoldenSectionMinimizeOptions {
   tolerance?: number;
   initialIncrement?: number;
   lowerBound?: number;
   upperBound?: number;
   maxIterations?: number;
   guess?: number;
-} 
+}
 
-export type MinimizeStatus = GoldenSectionMinimizeStatus;
-
-export const minimizeGoldenSection1D = async (f: (v: number) => (number | Promise<number>), options?: MinimizeOptions, status?: MinimizeStatus) => {
+export const minimizeGoldenSection1D = async (
+  f: (v: number) => number | Promise<number>,
+  options?: GoldenSectionMinimizeOptions,
+  status?: GoldenSectionMinimizeStatus,
+) => {
   options = options ?? {};
   let x0;
   const tolerance = options.tolerance === undefined ? 1e-8 : options.tolerance;
-  const dx = options.initialIncrement === undefined ? 1 : options.initialIncrement;
-  const xMin = options.lowerBound === undefined ? -Infinity : options.lowerBound;
+  const dx =
+    options.initialIncrement === undefined ? 1 : options.initialIncrement;
+  const xMin =
+    options.lowerBound === undefined ? -Infinity : options.lowerBound;
   const xMax = options.upperBound === undefined ? Infinity : options.upperBound;
-  const maxIterations = options.maxIterations === undefined ? 100 : options.maxIterations;
+  const maxIterations =
+    options.maxIterations === undefined ? 100 : options.maxIterations;
   const bounds: [number, number] = [0, 0];
 
   if (status) {
@@ -52,5 +59,12 @@ export const minimizeGoldenSection1D = async (f: (v: number) => (number | Promis
     }
   }
 
-  return goldenSectionMinimize(f, bounds[0], bounds[1], tolerance, maxIterations, status);
+  return goldenSectionMinimize(
+    f,
+    bounds[0],
+    bounds[1],
+    tolerance,
+    maxIterations,
+    status,
+  );
 };

@@ -1,15 +1,20 @@
-
 const PHI_RATIO = 2 / (1 + Math.sqrt(5));
 
 export interface GoldenSectionMinimizeStatus {
   iterations?: number;
-  argmin?: number
-  minimum?: number
-  converged?: boolean
+  argmin?: number;
+  minimum?: number;
+  converged?: boolean;
 }
 
-export const goldenSectionMinimize = async (f: (v: number) => number | Promise<number>, xL: number, xU: number, tol: number, maxIterations: number, status?: GoldenSectionMinimizeStatus) => {
-  let xF, fF;
+export const goldenSectionMinimize = async (
+  f: (v: number) => number | Promise<number>,
+  xL: number,
+  xU: number,
+  tol: number,
+  maxIterations: number,
+  status?: GoldenSectionMinimizeStatus,
+) => {
   let iteration = 0;
   let x1 = xU - PHI_RATIO * (xU - xL);
   let x2 = xL + PHI_RATIO * (xU - xL);
@@ -42,8 +47,8 @@ export const goldenSectionMinimize = async (f: (v: number) => number | Promise<n
     }
   }
 
-  xF = 0.5 * (xU + xL);
-  fF = 0.5 * (f1 + f2);
+  const xF = 0.5 * (xU + xL);
+  const fF = 0.5 * (f1 + f2);
 
   if (status) {
     status.iterations = iteration;
@@ -73,4 +78,4 @@ export const goldenSectionMinimize = async (f: (v: number) => number | Promise<n
   } else {
     return xF;
   }
-}
+};

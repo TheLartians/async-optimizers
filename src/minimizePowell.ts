@@ -1,38 +1,43 @@
 import { minimizeGoldenSection1D } from "./minimizeGoldenSection1D";
 
 interface PowellOptions {
-    maxIter?: number;
-    maxIterLinearSearch?: number;
-    lineTolerance?: number;
-    tolerance?: number;
-    bounds?: ([number, number] | null)[];
-    verbose?: boolean;
+  maxIter?: number;
+  maxIterLinearSearch?: number;
+  lineTolerance?: number;
+  tolerance?: number;
+  bounds?: ([number, number] | null)[];
+  verbose?: boolean;
 }
 
 interface PowellStatus {
-    points: number[][]
+  points: number[][];
 }
 
-export const minimizePowell = async <T extends number[]>(f: (v: T) => (number | Promise<number>), x0: T, options?: PowellOptions, status?: PowellStatus): Promise<T | undefined> => {
-  let i, j, iter, ui: number[], tmin, pj: number[], fi, un, u: number[][], p0, sum, err, perr, du, tlimit;
+export const minimizePowell = async <T extends number[]>(
+  f: (v: T) => number | Promise<number>,
+  x0: T,
+  options?: PowellOptions,
+  status?: PowellStatus,
+): Promise<T | undefined> => {
+  let i, j, iter, ui: number[], tmin, un, p0, sum, err, perr, du, tlimit;
 
-  const maxIter = options?.maxIter ?? 20
-  const bounds = options?.bounds ?? []
-  const verbose = options?.verbose ?? false
+  const maxIter = options?.maxIter ?? 20;
+  const bounds = options?.bounds ?? [];
+  const verbose = options?.verbose ?? false;
   const maxIterLinearSearch = options?.maxIterLinearSearch ?? 100;
-  const dx = 0.1
-  const tol = (options?.tolerance ?? 1e-8)
-  const tol1d = (options?.lineTolerance ?? tol) * dx
+  const dx = 0.1;
+  const tol = options?.tolerance ?? 1e-8;
+  const tol1d = (options?.lineTolerance ?? tol) * dx;
 
   if (status) status.points = [];
 
   // Dimensionality:
-  let n = x0.length;
+  const n = x0.length;
   // Solution vector:
-  let p = x0.slice(0);
+  const p = x0.slice(0);
 
   // Search directions:
-  u = [];
+  const u: number[][] = [];
   un = [];
   for (i = 0; i < n; i++) {
     u[i] = [];
@@ -42,9 +47,9 @@ export const minimizePowell = async <T extends number[]>(f: (v: T) => (number | 
   }
 
   // Bound the input:
-  function constrain (x: number[]) {
+  function constrain(x: number[]) {
     for (let i = 0; i < bounds.length; i++) {
-      let ibounds = bounds[i];
+      const ibounds = bounds[i];
       if (!ibounds) continue;
       if (isFinite(ibounds[0])) {
         x[i] = Math.max(ibounds[0], x[i]);
@@ -59,35 +64,41 @@ export const minimizePowell = async <T extends number[]>(f: (v: T) => (number | 
 
   if (status) status.points.push(p.slice());
 
-  let bound = options?.bounds
+  const bound = options?.bounds
     ? function (p: number[], ui: number[]) {
-      let upper = Infinity;
-      let lower = -Infinity;
+        let upper = Infinity;
+        let lower = -Infinity;
 
-      for (let j = 0; j < n; j++) {
-        let jbounds = bounds[j];
-        if (!jbounds) continue;
+        for (let j = 0; j < n; j++) {
+          const jbounds = bounds[j];
+          if (!jbounds) continue;
 
-        if (ui[j] !== 0) {
-          if (jbounds[0] !== undefined && isFinite(jbounds[0])) {
-            lower = (ui[j] > 0 ? Math.max : Math.min)(lower, (jbounds[0] - p[j]) / ui[j]);
-          }
+          if (ui[j] !== 0) {
+            if (jbounds[0] !== undefined && isFinite(jbounds[0])) {
+              lower = (ui[j] > 0 ? Math.max : Math.min)(
+                lower,
+                (jbounds[0] - p[j]) / ui[j],
+              );
+            }
 
-          if (jbounds[1] !== undefined && isFinite(jbounds[1])) {
-            upper = (ui[j] > 0 ? Math.min : Math.max)(upper, (jbounds[1] - p[j]) / ui[j]);
+            if (jbounds[1] !== undefined && isFinite(jbounds[1])) {
+              upper = (ui[j] > 0 ? Math.min : Math.max)(
+                upper,
+                (jbounds[1] - p[j]) / ui[j],
+              );
+            }
           }
         }
-      }
 
-      return [lower, upper];
-    }
+        return [lower, upper];
+      }
     : function () {
-      return [-Infinity, Infinity];
-    };
+        return [-Infinity, Infinity];
+      };
 
   // A function to evaluate:
-  pj = [];
-  fi = function (t: number) {
+  const pj: number[] = [];
+  const fi = function (t: number) {
     for (let i = 0; i < n; i++) {
       pj[i] = p[i] + ui[i] * t;
     }
@@ -98,9 +109,8 @@ export const minimizePowell = async <T extends number[]>(f: (v: T) => (number | 
   iter = 0;
   perr = 0;
   while (++iter < maxIter) {
-
     // Reinitialize the search vectors:
-    if (iter % (n) === 0) {
+    if (iter % n === 0) {
       for (i = 0; i < n; i++) {
         u[i] = [];
         for (j = 0; j < n; j++) {
@@ -130,11 +140,11 @@ export const minimizePowell = async <T extends number[]>(f: (v: T) => (number | 
       });
 
       if (tmin === undefined) {
-        return undefined
+        return undefined;
       }
 
       if (tmin === 0) {
-        return p as T; 
+        return p as T;
       }
 
       // Update the solution vector:
@@ -204,7 +214,12 @@ export const minimizePowell = async <T extends number[]>(f: (v: T) => (number | 
 
     err = Math.sqrt(err);
 
-    if (verbose) console.log('Iteration ' + iter + ': ' + (err / perr) + ' f(' + p + ') = ' + await f(p as T));
+    if (verbose)
+      console.log(
+        `Iteration ${iter}: ${err / perr} f(${JSON.stringify(p)}) = ${await f(
+          p as T,
+        )}`,
+      );
 
     if (err / perr < tol) return p as T;
 
@@ -212,4 +227,4 @@ export const minimizePowell = async <T extends number[]>(f: (v: T) => (number | 
   }
 
   return p as T;
-}
+};
