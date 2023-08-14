@@ -1,2 +1,4 @@
-test
-example
+src
+node_modules
+.github
+.git

@@ -456,7 +456,6 @@ describe("Minimize powell noise robustness", () => {
             [-10, 10],
             [-10, 10],
           ],
-          verbose: true,
         },
       ))!;
       expect(result[0]).toBeCloseTo(2, -Math.log10(noiseLevel) / 2 - 1);

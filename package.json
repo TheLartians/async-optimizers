@@ -6,7 +6,9 @@
   "scripts": {
     "test": "jest",
     "typecheck": "tsc -p . --noEmit",
-    "lint": "eslint 'src/**/*.{js,ts}'"
+    "lint": "eslint 'src/**/*.{js,ts}'",
+    "build": "tsc -p .",
+    "prepublish": "yarn build"
   },
   "keywords": [
     "scijs",
